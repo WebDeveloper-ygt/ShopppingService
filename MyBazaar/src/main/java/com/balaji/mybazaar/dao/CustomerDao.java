@@ -11,13 +11,16 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
+
+import com.balaji.mybazaar.exception.ExceptionOccurred;
 import com.balaji.mybazaar.main.DbConnection;
 import com.balaji.mybazaar.model.CustomerBean;
 import com.balaji.mybazaar.utils.BazaarUtils;
 
 public class CustomerDao {
 
-	
+	Logger log = Logger.getLogger(CustomerDao.class);
 	List<CustomerBean> custList;
 	DbConnection dbConn;
 	Connection conn;
@@ -26,19 +29,18 @@ public class CustomerDao {
 		dbConn = new DbConnection();
 		conn = dbConn.getDbConnection();
 		custList = new ArrayList<>();
+		log.info("Invoked CustomerDao ");
 	}
 
 	public Response getAllCustomers() throws SQLException {
-		// TODO Auto-generated method stub
-		
 		customers = BazaarUtils.CUSTOMER;
 		return this.getCustomersCommon(customers);
 	}
 
 	public Response getCustomersCommon(String cust) throws SQLException {
+		try {
 		PreparedStatement pst = conn.prepareStatement(cust);
 		ResultSet resSet = pst.executeQuery();
-		System.out.println(resSet);
 		while (resSet.next()) {
 			CustomerBean custBean =new CustomerBean();
 			custBean.setFirstName(resSet.getString(1));
@@ -50,11 +52,17 @@ public class CustomerDao {
 			
 			custList.add(custBean);
 		}
-		for (CustomerBean customerBean : custList) {
-			System.out.println(customerBean.getFirstName());
-		}
 		
-		return Response.status(Status.OK).entity(new GenericEntity<List<CustomerBean>>(custList) {}).build();
+		if(custList.size() > 0) {
+			log.info("Fetching Customer details is successful");
+			return Response.status(Status.OK).entity(new GenericEntity<List<CustomerBean>>(custList) {}).build();
+		}else {
+			log.info("Fetching Customer details is Failed");
+			return Response.status(Status.NOT_FOUND).entity(new GenericEntity<List<CustomerBean>>(custList) {}).build();
+		}
+		}catch (Exception Ex) {
+			throw new ExceptionOccurred();
+		}
 	}
 
 	public Response getCustomersByName(String name) throws SQLException {
@@ -64,9 +72,30 @@ public class CustomerDao {
 	}
 
 	public Response getCustomersByName(int custId) throws SQLException {
-		// TODO Auto-generated method stub
 		customers = BazaarUtils.CUSTOMER_ID + custId;
 		return this.getCustomersCommon(customers);
+	}
+
+	public Response addCustomer(CustomerBean custbean) throws SQLException {
+		try {
+		String addUserSql = "INSERT INTO `bazaar`.`customer`(`firstName`,`lastName`,`emailId`,`phoneNumber`) VALUES(?,?,?,?)";
+		
+		PreparedStatement pst = conn.prepareStatement(addUserSql);
+		pst.setString(1, custbean.getFirstName());
+		pst.setString(2, custbean.getLastName());
+		pst.setString(3, custbean.getEmailId());
+		pst.setString(4, custbean.getMobileNumber());
+		boolean result = pst.execute();
+		if(result == false) {
+			customers = BazaarUtils.CUSTOMER_NUM + custbean.getMobileNumber();
+			return this.getCustomersCommon(customers);
+		}else {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		}catch(Exception ex) {
+			throw new ExceptionOccurred();
+		}
+		
 	}
 	
 }

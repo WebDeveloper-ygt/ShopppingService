@@ -8,6 +8,8 @@ public class BazaarUtils {
 	public static final String ITEMS_ID="select * from sh_items where shopId = ";
 	public static final String CUSTOMER = "select * from customer";
 	public static final String CUSTOMER_ID = "select * from customer where customerId = ";
+	public static final String CUSTOMER_EMAIL= "select * from bazaar.customer where emailId = ";
+	public static final String CUSTOMER_NUM= "select * from bazaar.customer where phoneNumber = ";
 	public static final String ORDERS =" select * from  orders";
 	public static final String ORDERS_ID = "select * from bazaar.orders where orderId= ";
 	public static final String ORDERS_CUST_ID = "select * from bazaar.orders where customerId= ";

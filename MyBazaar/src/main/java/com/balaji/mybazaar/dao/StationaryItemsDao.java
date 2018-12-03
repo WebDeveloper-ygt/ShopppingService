@@ -7,10 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
+import com.balaji.mybazaar.exception.ExceptionOccurred;
 import com.balaji.mybazaar.main.DbConnection;
 import com.balaji.mybazaar.model.ItemsBean;
 import com.balaji.mybazaar.model.ShopItemsBean;
@@ -40,7 +41,7 @@ public class StationaryItemsDao {
 		return null;
 	}
 
-	public Response getItemsByshopId(int shopId) throws SQLException {
+	public Response getItemsByshopId(int shopId, UriInfo uriInfo) throws SQLException {
 		Items= BazaarUtils.ITEMS_ID + shopId;
 		PreparedStatement pst = conn.prepareStatement(Items);
 		ResultSet resSet = pst.executeQuery();
@@ -59,11 +60,45 @@ public class StationaryItemsDao {
 		
 	}
 	
-	
 	public Response getAllItemsByName(String itName) throws SQLException {
 		// TODO Auto-generated method stub
 		Items = BazaarUtils.ITEMS + " where itemName = '"+itName+ "' or itemName like '%" + itName.substring(0, 3) +"%' collate utf8_general_ci" ;
 		return this.getItemsByCommon(Items);
+	}
+
+	public String getOnlyItemsByshopId(int shopId,UriInfo uriInfo) throws SQLException {
+		// TODO Auto-generated method stub
+		String itemJson = null ;
+		try {
+			Items= BazaarUtils.ITEMS_ID + shopId;
+			PreparedStatement pst = conn.prepareStatement(Items);
+			ResultSet resSet = pst.executeQuery();
+			while (resSet.next()) {
+				itemJson = resSet.getString(2);
+				System.out.println(itemJson);
+			}
+			return itemJson;
+			
+		}catch(Exception e) {
+			throw new ExceptionOccurred();
+		}
+		
+		
+	}
+
+	public Response addShopItems(int shopId, String updatedItems, UriInfo uriInfo) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		String addItem = "UPDATE `bazaar`.`sh_items` SET `shopItems` =?  WHERE `shopId` ="+shopId;
+		PreparedStatement pst = conn.prepareStatement(addItem);
+		pst.setString(1, updatedItems);
+		
+		int result =pst.executeUpdate();
+		if(result > 0) {
+			return getItemsByshopId(shopId,uriInfo);
+		}else {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
 	}
 
 	

@@ -4,9 +4,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.balaji.mybazaar.model.CustomerBean;
 import com.balaji.mybazaar.model.ItemsBean;
 import com.balaji.mybazaar.model.OrderItemBean;
-import com.balaji.mybazaar.model.ShopItemsBean;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -32,5 +32,18 @@ public static List<ItemsBean> StringToListShopItems(String jsonString) {
 		System.out.println("Converted Result: "+ result.toString());
 		return result;
 	}
+
+public static String ListShopItemsToString(List<ItemsBean> items) {
 	
+		String result = gson.toJson(items);
+		return result;
+	
+}
+
+public static boolean validateCustomerInput(CustomerBean custbean) {
+	if(custbean.getEmailId() != null || custbean.getMobileNumber() != null || custbean.getFirstName() != null || custbean.getLastName() != null ) {
+	return true;
+	}
+	return false;
+}
 }

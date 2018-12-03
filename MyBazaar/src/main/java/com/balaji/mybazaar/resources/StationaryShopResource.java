@@ -29,7 +29,7 @@ public class StationaryShopResource {
 	}
 	
 	@GET
-	@Path("{shopId}")
+	@Path("{shopId : \\d+}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response getShopDetails(@PathParam("shopId") int shId) throws SQLException {
 		

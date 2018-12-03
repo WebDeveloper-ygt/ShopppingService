@@ -22,12 +22,10 @@ public class DbConnection {
 		}
 		try {
 			conn = DriverManager.getConnection(URL, user, password);
-			System.out.println(conn);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(conn.getSchema());
 		return conn;
 		
 	}
