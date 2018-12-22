@@ -5,9 +5,14 @@ import java.sql.SQLException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
+
 import com.balaji.mybazaar.dao.StationaryItemsDao;
 
 public class StationaryItemsService {
+
+	Logger LOGGER = Logger.getLogger(StationaryItemsService.class);
+	private static String Invoked = "Invoked StationaryItemsService";
 
 	StationaryItemsDao itemsDao;
 
@@ -15,39 +20,25 @@ public class StationaryItemsService {
 		itemsDao = new StationaryItemsDao();
 	}
 
-	
-
 	public Response getAllItems() throws SQLException {
-		// TODO Auto-generated method stub
+		LOGGER.info(Invoked);
 		return itemsDao.getAllItems();
 	}
 
-
-
-	public Response getItemsByshopId(int shopId, UriInfo uriInfo) throws SQLException {
-		// TODO Auto-generated method stub
-		return itemsDao.getItemsByshopId(shopId,uriInfo);
+	public Response getItemsByshopId(int shopId) throws SQLException {
+		LOGGER.info(Invoked);
+		return itemsDao.getItemsByshopId(shopId);
 	}
 
-
-
-	public Response getAllItemsByName(String itName) throws SQLException {
-		// TODO Auto-generated method stub  
-		 return itemsDao.getAllItemsByName(itName);
+	public String getPresentItemsByshopId(int shopId) throws SQLException {
+		LOGGER.info(Invoked);
+		return itemsDao.getPresentItemsByshopId(shopId);
 	}
-
-
-
-	public String getOnlyItemsByshopId(int shopId, UriInfo uriInfo) throws SQLException {
-		// TODO Auto-generated method stub
-		return itemsDao.getOnlyItemsByshopId(shopId,uriInfo);
-	}
-
 
 
 	public Response addShopItems(int shopId, String updatedItems, UriInfo uriInfo) throws SQLException {
-		// TODO Auto-generated method stub
-		return itemsDao.addShopItems(shopId,updatedItems,uriInfo);
+		LOGGER.info(Invoked);
+		return itemsDao.addShopItems(shopId, updatedItems, uriInfo);
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.balaji.mybazaar.exception;
 
-public class CustomerNotCreated extends RuntimeException {
+public class ResourceNotCreated extends RuntimeException {
 
 	/**
 	 * 

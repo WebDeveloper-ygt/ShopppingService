@@ -11,6 +11,9 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
+
+import com.balaji.mybazaar.exception.CustomNotFoundException;
 import com.balaji.mybazaar.main.DbConnection;
 import com.balaji.mybazaar.model.OrderItemBean;
 import com.balaji.mybazaar.model.OrdersBean;
@@ -19,6 +22,9 @@ import com.balaji.mybazaar.utils.BazaarUtils;
 
 public class OrdersDao {
 
+	Logger LOGGER = Logger.getLogger(OrdersDao.class); 
+	private static String Invoked = "Invoked OrdersDao";
+	
 	List<OrdersBean> orderList;
 	DbConnection dbConn;
 	Connection conn;
@@ -29,37 +35,41 @@ public class OrdersDao {
 		orderList = new ArrayList<>();
 	}
 	public Response getAllOrders() throws SQLException {
-		// TODO Auto-generated method stub
+		LOGGER.info(Invoked);
 		orders = BazaarUtils.ORDERS;
 		return this.getOrdersCommon(orders);
 	}
 	private Response getOrdersCommon(String orders2) throws SQLException {
-		// TODO Auto-generated method stub
 		PreparedStatement pst = conn.prepareStatement(orders2);
 		ResultSet resSet = pst.executeQuery();
+		boolean checker = false;
 		while(resSet.next()) {
+			checker = true;
 			OrdersBean ordBean = new OrdersBean();
 			ordBean.setOrderId(resSet.getInt(1));
 			ordBean.setCustomerId(resSet.getInt(2));
 			String jsontest = resSet.getString(3);
-			System.out.println("String from db : "+ jsontest);
+			//LOGGER.info("Items Details for the customer order :"+ jsontest);
 			List<OrderItemBean> itemsBean = BasicUtils.StringToListOrderItemBean(jsontest);
-			System.out.println(itemsBean);
 			ordBean.setItems(itemsBean);
 			orderList.add(ordBean);
 		}
-		return Response.status(Status.OK).entity(new GenericEntity<List<OrdersBean>>(orderList) {}).build();
+		if(checker == true) {
+			return Response.status(Status.OK).entity(new GenericEntity<List<OrdersBean>>(orderList) {}).build();
+		}else {
+			throw new CustomNotFoundException();
+		}
 	}
 	public Response getOrderByOrderId(int orderID) throws SQLException {
 		// TODO Auto-generated method stub
 		orders = BazaarUtils.ORDERS_ID + orderID;
-		System.out.println(orders);
+		LOGGER.info("Fetching order details for orderid : "+ orderID);
 		return this.getOrdersCommon(orders);
 	}
 	public Response getOrderByCustomerId(int custId) throws SQLException {
-		// TODO Auto-generated method stub
 		orders = BazaarUtils.ORDERS_CUST_ID+ custId;
-		System.out.println(orders);
+		LOGGER.info(Invoked);
+		LOGGER.info("Fetching order details for the customer id : "+ custId);
 		return this.getOrdersCommon(orders);
 	}
 

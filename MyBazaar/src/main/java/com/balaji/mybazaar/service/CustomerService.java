@@ -10,27 +10,31 @@ import com.balaji.mybazaar.model.CustomerBean;
 
 public class CustomerService {
 
-	Logger log = Logger.getLogger(CustomerService.class);
+	Logger LOGGER = Logger.getLogger(CustomerService.class);
+	private static String Invoked="Invoked Customer Service";
 	CustomerDao custDao;
 	
 	public CustomerService() throws SQLException {
 		custDao = new CustomerDao();
-		log.info("Invoked CustomerService");
 	}
 
 	public Response getAllCustomers() throws SQLException {
+		LOGGER.info(Invoked);
 		return custDao.getAllCustomers();
 	}
 
 	public Response getCustomersByName(String name) throws SQLException {
+		LOGGER.info(Invoked);
 		return custDao.getCustomersByName(name);
 	}
 
 	public Response getCustomersById(int custId) throws SQLException {
+		LOGGER.info(Invoked);
 		return custDao.getCustomersByName(custId);
 	}
 
 	public Response addCustomer(CustomerBean custbean) throws SQLException {
+		LOGGER.info(Invoked);
 		return custDao.addCustomer(custbean);
 	}
 

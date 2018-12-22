@@ -20,20 +20,23 @@ import com.balaji.mybazaar.utils.BazaarUtils;
 
 public class CustomerDao {
 
-	Logger log = Logger.getLogger(CustomerDao.class);
+	Logger LOGGER = Logger.getLogger(CustomerDao.class);
 	List<CustomerBean> custList;
 	DbConnection dbConn;
 	Connection conn;
 	String customers;
+	private static String Invoked = "Invoked CustomerDao ";
+	
 	public CustomerDao() throws SQLException {
 		dbConn = new DbConnection();
 		conn = dbConn.getDbConnection();
 		custList = new ArrayList<>();
-		log.info("Invoked CustomerDao ");
 	}
 
 	public Response getAllCustomers() throws SQLException {
 		customers = BazaarUtils.CUSTOMER;
+		LOGGER.info(Invoked);
+		LOGGER.info("Fetaching Details for all the customers");
 		return this.getCustomersCommon(customers);
 	}
 
@@ -54,13 +57,14 @@ public class CustomerDao {
 		}
 		
 		if(custList.size() > 0) {
-			log.info("Fetching Customer details is successful");
+			LOGGER.info("Fetching Customer details is successful");
 			return Response.status(Status.OK).entity(new GenericEntity<List<CustomerBean>>(custList) {}).build();
 		}else {
-			log.info("Fetching Customer details is Failed");
+			LOGGER.info("Fetching Customer details is Failed");
 			return Response.status(Status.NOT_FOUND).entity(new GenericEntity<List<CustomerBean>>(custList) {}).build();
 		}
 		}catch (Exception Ex) {
+			LOGGER.error(Ex.getMessage());
 			throw new ExceptionOccurred();
 		}
 	}
@@ -68,11 +72,15 @@ public class CustomerDao {
 	public Response getCustomersByName(String name) throws SQLException {
 		// TODO Auto-generated method stub
 		customers = BazaarUtils.CUSTOMER + " where firstName = '"+name+ "' or firstName like '%" + name +"%' collate utf8_general_ci" ;
+		LOGGER.info(Invoked);
+		LOGGER.info("Fetaching Details for customer search string: "+ name);
 		return this.getCustomersCommon(customers);
 	}
 
 	public Response getCustomersByName(int custId) throws SQLException {
 		customers = BazaarUtils.CUSTOMER_ID + custId;
+		LOGGER.info(Invoked);
+		LOGGER.info("Fetaching Details for customer search ID: "+ custId);		
 		return this.getCustomersCommon(customers);
 	}
 

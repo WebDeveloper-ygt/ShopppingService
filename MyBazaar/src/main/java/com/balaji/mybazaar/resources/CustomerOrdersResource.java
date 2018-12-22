@@ -9,14 +9,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.balaji.mybazaar.service.OrdersService;
+import org.apache.log4j.Logger;
 
+import com.balaji.mybazaar.exception.CustomMethodNotAllowed;
+import com.balaji.mybazaar.exception.CustomNotFoundException;
+import com.balaji.mybazaar.exception.InputNotAllowed;
+import com.balaji.mybazaar.service.OrdersService;
+import com.balaji.mybazaar.utils.BasicUtils;
 
 public class CustomerOrdersResource {
 
-	
+	Logger LOGGER = Logger.getLogger(CustomerOrdersResource.class);
 	OrdersService ordServ ;
 	int customerId;
+	private static String Invoked = "Invoked CustomerOrdersResource";
 	public CustomerOrdersResource() throws SQLException {
 		
 	}
@@ -29,8 +35,13 @@ public class CustomerOrdersResource {
 	@GET
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Response getOrderByOrderId() throws SQLException {
-		
-		return ordServ.getOrderByCustomerId(customerId);
+		LOGGER.info(Invoked);
+		Response customerName = ordServ.getOrderByCustomerId(customerId);
+		LOGGER.info("Result "+ customerName.bufferEntity());
+		if(customerName.getStatus() !=200) {
+			throw new CustomNotFoundException();
+		}
+		return customerName;
 	}
 	
 	/*@GET
@@ -43,9 +54,22 @@ public class CustomerOrdersResource {
 	@GET
 	@Path("{orderID}")
 	@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response getOrderByOrderId(@PathParam("orderID") int orderID) throws SQLException {
-		
-		return ordServ.getOrderByOrderId(orderID);
+	public Response getOrderByOrderId(@PathParam("orderID") String orderID) throws SQLException {
+		LOGGER.info(Invoked);
+		if(BasicUtils.validateParamInput(orderID) == true) {
+			LOGGER.info("User input Order Id validation successful");
+			Response shopById = ordServ.getOrderByOrderId(Integer.parseInt(orderID));
+			if(shopById.getStatus() != 200) {
+				LOGGER.info("Response Status : "+ shopById.getStatus());
+				throw new CustomNotFoundException();
+			}
+			
+			return shopById;
+		}else {
+			LOGGER.info("User input Order Id validation failed and Input value is : "+ orderID);
+			throw new InputNotAllowed();
+		}
+	
 	}
 	
 	/*@GET
